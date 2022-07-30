@@ -1,7 +1,7 @@
 const validator = require('../validators/validations')
 const productModel = require('../models/productModel')
 const {uploadFile} = require('../aws/uploadImage')
-
+const mongoose = require('mongoose')
 const product = async function (req, res) {
     try {
 
@@ -82,5 +82,49 @@ const product = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+/////////////////////////getProductById //////////////////////////////////////////////////////
+
+const getProductById = async function (req,res){
+ try{
+    let productId = req.params.productId
+
+    if(!productId) return res.status(400).send({staus: false, message:"ProductId is not present"})
+    if(! mongoose.isValidObjectId(productId))return res.status(400).send({ststus: false,message:"Productid is not valid"})
+
+    let productDetails = await productModel.findById({_id : productId,isDeleated:false})
+    if(!productDetails) return res.status(404).send({status:false,message :"No such product in product model"})
+    return res.status(200).send({status:true,message:productDetails})
+
+ } catch(error) {
+return res.status(500).send({status:false , message:error.message})
+ } 
+}
+
+///////////////////////////// update product ///////////////////
+
+
+////////////////////////////////////////////////////// deleteProductById //////////////
+const deleteProductById = async function(req,res){
+ try{
+    let productId = req.params.productId
+
+    if(!productId) return  res.status(400).send({staus: false,message:"ProductId is not present"})
+    if(! mongoose.isValidObjectId(productId))return res.status(400).send({status: false,message:"Productid is not valid"})
+
+    let data= await productModel.findOne({_id :productId})
+    if(!data) return res.status(404).send({status:false,message:"No such product found"})
+
+    if(data.isDeleted== true) return res.status(404).send({status :false,message: "Product is already deleated"})
+
+    let modify = await productModel.findOneAndUpdate({_id : productId},{isDeleted:true},{new:true})
+    //console.log(modify)
+    return res.status(200).send({status:true,message:"Successfully deleted the product"})
+
+ }catch (error){
+    return res.send({status:false,message : error.message})
+ } 
+}
 
 module.exports.product = product
+module.exports.getProductById= getProductById
+module.exports.deleteProductById=deleteProductById
