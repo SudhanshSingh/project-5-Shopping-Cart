@@ -176,7 +176,7 @@ const register = async function (req, res) {
         .send({ status: false, message: "billing pincode is Invalid !!" });
 
     // <----------Create a document of user---------->
-    const data = await await userModel.create(body);
+    const data =  await userModel.create(body);
     return res
       .status(201)
       .send({ status: true, message: "Success", data: data });
@@ -184,6 +184,8 @@ const register = async function (req, res) {
     return res.status(500).send({ status: false, message: err.message });
   }
 };
+
+
 
 const login = async function (req, res) {
   try {
