@@ -4,7 +4,7 @@ const { uploadFile } = require("../aws/uploadImage");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const saltRounds = 8;
+const saltRounds = 10;
 
 const register = async function (req, res) {
   try {
@@ -274,7 +274,7 @@ const updateProfile = async function (req, res) {
     const update = {};
 
     // <--------reqBody validation----------------->
-    // if (!validator.isValidBody(body)) return res.status(400).send({ status: false, message: "Provide details incide body" })
+     if (!validator.isValidBody(body)) return res.status(400).send({ status: false, message: "Provide details incide body" })
 
     // <---------Fname validation---------------->
     if (fname) {
@@ -302,6 +302,7 @@ const updateProfile = async function (req, res) {
           .send({ status: false, message: "Enter valid email" });
       // <--------Check Email is Exist in db or not-------------->
       const uniqueEmail = await userModel.findOne({ email });
+      console.log(uniqueEmail)
       if (uniqueEmail)
         return res
           .status(409)

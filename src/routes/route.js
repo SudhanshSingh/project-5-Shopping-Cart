@@ -4,6 +4,7 @@ const userController = require('../controllers/userController')
 const productController = require('../controllers/productController')
 const middleware = require('../middleware/middware')
 const cartController = require('../controllers/cartController')
+const orderController  = require('../controllers/orderCotroller')
 
 // <------------User Api's----------------->
 router.post('/register',userController.register)
@@ -21,6 +22,12 @@ router.delete('/products/:productId', productController.deleteProductById)
 //<------------------Cart Api's-------------------------->
 router.post('/users/:userId/cart',middleware.Authenticate,middleware.Authorisation, cartController.createCart)
 router.put('/users/:userId/cart',middleware.Authenticate,middleware.Authorisation, cartController.updateCart)
+router.get('/users/:userId/cart',middleware.Authenticate,middleware.Authorisation, cartController.getCart)
+router.delete('/users/:userId/cart',middleware.Authenticate,middleware.Authorisation, cartController.deleteCart)
+
+// <-----------Order Api's----------------->
+router.post('/users/:userId/orders', orderController.createOrder)
+router.put('/users/:userId/orders', orderController.updateOrder)
 
 router.all("*", function (req,res) {
     res.status(404).send({

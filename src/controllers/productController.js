@@ -9,7 +9,7 @@ const product = async function (req, res) {
         let {title, price, availableSizes} = body;
         let productImage = req.files;
 
-        let passData = {};
+        //let passData = {};
         
         if (!validator.isValidBody(body))
         return res.status(400).send({ status: false, message: "Provide details incide body " });
@@ -25,6 +25,7 @@ const product = async function (req, res) {
             return res.status(400).send({ status: false, message: "provide valid title" });
             
         const dbCall = await productModel.findOne({ title });
+       
         if (dbCall)
             return res.status(409).send({ status: false, message: "title should unique" });
 
@@ -111,21 +112,21 @@ const product = async function (req, res) {
 
         let deletedAt = null;
 
-        passData = {
-            title,
-            description,
-            price,
-            currencyId,
-            currencyFormat,
-            isFreeShipping,
-            style,
-            installments,
-            productImage,
-            deletedAt,
-            availableSizes,
-        };
+        // passData = {
+        //     title,
+        //     description,
+        //     price,
+        //     currencyId,
+        //     currencyFormat,
+        //     isFreeShipping,
+        //     style,
+        //     installments,
+        //     productImage,
+        //     deletedAt,
+        //     availableSizes,
+        // };
 
-        const data = await productModel.create(passData);
+        const data = await productModel.create(body);
         return res.status(201).send({ status: true, message: "Success", data });
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
