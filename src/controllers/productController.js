@@ -5,6 +5,7 @@ const { uploadFile } = require("../aws/uploadImage");
 const product = async function (req, res) {
     try {
         const body = req.body;
+        
         const {  description, currencyId, currencyFormat, isFreeShipping, style, installments } = body;
         let {title, price, availableSizes} = body;
         let productImage = req.files;
@@ -31,13 +32,15 @@ const product = async function (req, res) {
 
         if (!description)
             return res.status(400).send({ status: false, message: "description is required" });
+
         if (!/^[A-Za-z]{2,}[\w\d\s\.\W\D]{1,38}$/.test(description))
+
+        if (!/^[A-Za-z]{2,}[\w\d\s\.\W\D]{1,}$/.test(description))
+
             return res.status(400).send({ status: false, message: "provide valid description" });
 
         if (!price)
             return res.status(400).send({ status: false, message: "price is required" });
-        // if (!/^[1-9]{1,}[\.]{0,1}[0-9]{0,2}$/.test(price))
-        //     return res.status(400).send({ status: false, message: "price is not in the valid formate" });
 
         if (price || price == "") {
             if (!/^[1-9]\d{0,8}(?:\.\d{1,2})?$/.test(price))
@@ -56,7 +59,7 @@ const product = async function (req, res) {
             return res.status(400).send({ status: false, message: "provide valid currencyId" });
 
         if (!currencyFormat)
-            return res.status(400).send({ status: false, message: "currencyId is required" });
+            return res.status(400).send({ status: false, message: "currencyFormat is required" });
         if (currencyFormat != "₹")
             return res.status(400).send({ status: false, message: "provide valid currencyFormat" });
 
@@ -101,9 +104,9 @@ const product = async function (req, res) {
                 if (!sizes.includes(isValidSize[i]))
                     return res.status(400).send({ status: false, message: "Please Enter the Valid Size !!" });
             }
-            availableSizes = isValidSize;
+            availableSizes =  [...new Set(isValidSize)];
         }
-
+    
         if (installments || installments == "") {
             let reg = /^[1-9][0-9]{0,2}$/;
             if (!reg.test(installments))
@@ -225,6 +228,11 @@ const updateProduct = async function (req, res) {
         
         if (!validator.isValidObjectId(productId))
         return res.status(400).send({ status: false, message: "Enter a Valid ProductId  !!" });
+
+        let isProductExist = await productModel.findOne({_id : productId, isDeleted: false});
+
+        if(!isProductExist)
+            return res.status(404).send({ status: false, message:"No product Found With this product id"});
         
         if (!validator.isValidBody(body))
         return res.status(400).send({ status: false, message: "Enter some details !!" });
@@ -244,14 +252,12 @@ const updateProduct = async function (req, res) {
         }
 
         if (description || description == "") {
-            if (!/^[A-Za-z]{2,}[\w\d\s\.\W\D]{1,22}$/.test(description))
+            if (!/^[A-Za-z]{2,}[\w\d\s\.\W\D]{1,}$/.test(description))
                 return res.status(400).send({ status: false, message: "provide valid description !!" });
             updatedData['description'] = description;
             console.log(updatedData)
         }
 
-        // ^[1-9]+\.?[0-9]*$
-        // /^[1-9]{1,}[\.]{0,1}[0-9]{0,2}$/
         if (price || price == "") {
             if (!/^[1-9]\d{0,8}(?:\.\d{1,2})?$/.test(price))
                 return res.status(400).send({
@@ -314,7 +320,7 @@ const updateProduct = async function (req, res) {
                 if (!sizes.includes(isValidSize[i]))
                     return res.status(400).send({ status: false, message: "Please Enter the Valid Size !!" });
             }
-            availableSizes = isValidSize;
+            availableSizes = [...new Set(isValidSize)];
             updatedData['availableSizes'] = availableSizes;
             console.log(updatedData)
         }
@@ -335,7 +341,7 @@ const updateProduct = async function (req, res) {
 
 
         let data = await productModel.findOneAndUpdate(
-            { _id: productId },
+            { _id: productId, isDeleted: false},
             updatedData,
             { new: true }
         );
