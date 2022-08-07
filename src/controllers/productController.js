@@ -31,7 +31,7 @@ const product = async function (req, res) {
 
         if (!description)
             return res.status(400).send({ status: false, message: "description is required" });
-        if (!/^[A-Za-z]{2,}[\w\d\s\.\W\D]{1,38}$/.test(title))
+        if (!/^[A-Za-z]{2,}[\w\d\s\.\W\D]{1,38}$/.test(description))
             return res.status(400).send({ status: false, message: "provide valid description" });
 
         if (!price)
@@ -112,21 +112,21 @@ const product = async function (req, res) {
 
         let deletedAt = null;
 
-        // passData = {
-        //     title,
-        //     description,
-        //     price,
-        //     currencyId,
-        //     currencyFormat,
-        //     isFreeShipping,
-        //     style,
-        //     installments,
-        //     productImage,
-        //     deletedAt,
-        //     availableSizes,
-        // };
+        passData = {
+            title,
+            description,
+            price,
+            currencyId,
+            currencyFormat,
+            isFreeShipping,
+            style,
+            installments,
+            productImage,
+            deletedAt,
+            availableSizes,
+        };
 
-        const data = await productModel.create(body);
+        const data = await productModel.create(passData);
         return res.status(201).send({ status: true, message: "Success", data });
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
