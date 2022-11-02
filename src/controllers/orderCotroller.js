@@ -29,6 +29,7 @@ const createOrder = async function (req, res) {
         // cartmodel check
 
         const cartDoc = await cartModel.findOne({ _id: cartId, userId }).select({ _id: 0, __v: 0, createdAt: 0, updatedAt: 0 }).lean();
+        // console.log(cartDoc)
 
         if (!cartDoc)
             return res.status(404).send({ status: false, message: `No Cart Found with this CartId ${cartId} 🛁` })
@@ -38,6 +39,7 @@ const createOrder = async function (req, res) {
 
 
         const orderDoc = await orderModel.findOne({ userId }).select({ _id: 0, __v: 0 })
+       
 
         if (orderDoc)
             return res.status(409).send({ status: false, message: "Order already exists !! 😎", data: orderDoc })
@@ -58,7 +60,7 @@ const createOrder = async function (req, res) {
         cartDoc['totalQuantity'] = allQuantity;
         cartDoc['deletedAt'] = null;
 
-        //  console.log(cartDoc)
+         
 
         await cartModel.findOneAndUpdate({ _id: cartId }, { items: [], totalItems: 0, totalPrice: 0 })
 
@@ -96,6 +98,7 @@ const updateOrder = async function (req, res) {
         if (!cartDoc) return res.status(400).send({ status: false, message: "Cart not exist !! 🙄" })
 
         const orderDoc = await orderModel.findOne({ _id: orderId, userId }).lean();
+        console.log(orderDoc)
 
 
         if (!orderDoc) return res.status(404).send({ status: false, message: `No Order Found of This User ${userId} 🙄` });
